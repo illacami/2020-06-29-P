@@ -6,8 +6,11 @@ package it.polito.tdp.PremierLeague;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
+
+import it.polito.tdp.PremierLeague.model.Adiacenza;
 import it.polito.tdp.PremierLeague.model.Model;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -39,7 +42,7 @@ public class FXMLController {
     private TextField txtMinuti; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbMese"
-    private ComboBox<?> cmbMese; // Value injected by FXMLLoader
+    private ComboBox<Integer> cmbMese; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbM1"
     private ComboBox<?> cmbM1; // Value injected by FXMLLoader
@@ -53,10 +56,28 @@ public class FXMLController {
     @FXML
     void doConnessioneMassima(ActionEvent event) {
     	
+    	List<Adiacenza> adiacenze = new LinkedList<Adiacenza>(model.connessioneMax());
+    	
+    	txtResult.appendText("\nCoppie con connessione massima: ");
+    	for(Adiacenza a : adiacenze)
+    		txtResult.appendText("\n"+a);
     }
 
     @FXML
     void doCreaGrafo(ActionEvent event) {
+    	
+    	int min = 0;
+    	try {
+    		String text = txtMinuti.getText();
+    		min = Integer.parseInt(text);
+    	}catch(NumberFormatException e) {
+    		txtResult.setText("Errore: inserire solo cifre numeriche");
+    		return;
+    	}
+    	
+    	model.creaGrafo(min, cmbMese.getValue());
+    	
+    	txtResult.setText("Grafo creato\n# VERTICI: "+model.getVerticiSize()+"\n# ARCHI: "+model.getEdgeSize());
     	
     }
 
@@ -79,7 +100,12 @@ public class FXMLController {
     
     public void setModel(Model model) {
     	this.model = model;
-  
+    	
+    	List<Integer> mesi = new LinkedList<Integer>();
+    	for(int i = 1; i < 13; i++)
+    		mesi.add(i);
+    	
+    	cmbMese.getItems().addAll(mesi);
     }
     
     
