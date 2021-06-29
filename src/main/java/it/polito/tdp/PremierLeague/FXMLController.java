@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import it.polito.tdp.PremierLeague.model.Adiacenza;
+import it.polito.tdp.PremierLeague.model.Match;
 import it.polito.tdp.PremierLeague.model.Model;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -45,10 +46,10 @@ public class FXMLController {
     private ComboBox<Integer> cmbMese; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbM1"
-    private ComboBox<?> cmbM1; // Value injected by FXMLLoader
+    private ComboBox<Match> cmbM1; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbM2"
-    private ComboBox<?> cmbM2; // Value injected by FXMLLoader
+    private ComboBox<Match> cmbM2; // Value injected by FXMLLoader
 
     @FXML // fx:id="txtResult"
     private TextArea txtResult; // Value injected by FXMLLoader
@@ -79,10 +80,22 @@ public class FXMLController {
     	
     	txtResult.setText("Grafo creato\n# VERTICI: "+model.getVerticiSize()+"\n# ARCHI: "+model.getEdgeSize());
     	
+    	cmbM1.getItems().addAll(model.getVertici(cmbMese.getValue()));
+    	cmbM2.getItems().addAll(model.getVertici(cmbMese.getValue()));
     }
 
     @FXML
     void doCollegamento(ActionEvent event) {
+    	
+    	Match mInizio = cmbM1.getValue();
+    	Match mFine = cmbM2.getValue();
+    	
+    	txtResult.appendText("\nCollegamento di peso massimo:\n");
+    	for(Adiacenza a : model.camminoPesoMassimo(mInizio, mFine))
+    		txtResult.appendText("\n"+a.getM1());
+    	
+    	if(model.camminoPesoMassimo(mInizio, mFine).isEmpty())
+    		txtResult.appendText("\nCammino non trovato");
     	
     }
 

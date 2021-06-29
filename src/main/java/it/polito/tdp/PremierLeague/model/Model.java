@@ -23,6 +23,8 @@ public class Model {
 	
 	private Map<Integer, Match> idMatch;
 	
+	private List<Adiacenza> best;
+	
 	public Model() {
 		dao = new PremierLeagueDAO();
 		idMatch = new HashMap<Integer,Match>();
@@ -91,4 +93,85 @@ public class Model {
 		
 		return archiTrovati;
 	}
+	
+	public List<Adiacenza> camminoPesoMassimo(Match m1, Match m2){
+		
+		List<Adiacenza> parziale = new ArrayList<Adiacenza>();
+		
+		best = new ArrayList<Adiacenza>();
+		
+		cerca(m1, m2, parziale);
+		
+		return best;
+	}
+	
+	public void cerca(Match mInizio, Match mFine, List<Adiacenza> parziale) {
+		
+		if(parziale.isEmpty()) {
+			for(DefaultWeightedEdge edge : grafo.outgoingEdgesOf(mInizio)) {
+				Match m1 = grafo.getEdgeSource(edge);
+				Match m2 = grafo.getEdgeTarget(edge);
+				int peso = (int)grafo.getEdgeWeight(edge);
+				
+				Adiacenza adiacenza = new Adiacenza(m1, m2, peso);
+				
+				parziale.add(adiacenza);
+				cerca(mInizio, mFine, parziale);
+				parziale.remove(parziale.size()-1);
+			}
+				
+		}else {
+		//caso terminale
+		if(parziale.get(parziale.size()-1).getM2().equals(mFine)) {
+			if(peso(parziale) > peso(best)) {
+				best = new ArrayList<Adiacenza>(parziale);
+				return;
+			}
+		}
+		
+		for(DefaultWeightedEdge edge : grafo.outgoingEdgesOf(parziale.get(parziale.size()-1).getM2())) {
+			Match m1 = grafo.getEdgeSource(edge);
+			Match m2 = grafo.getEdgeTarget(edge);
+			int peso = (int)grafo.getEdgeWeight(edge);
+			
+			Adiacenza adiacenza = new Adiacenza(m1, m2, peso);
+			
+			if(this.aggiuntaAmmissibile(m1, m2) && !parziale.contains(adiacenza)) {
+				parziale.add(adiacenza);
+				cerca(mInizio,mFine,parziale);
+				parziale.remove(parziale.size()-1);
+			}
+				
+		}
+		}
+	}
+	
+	
+	public double peso(List<Adiacenza> cammino) {
+		
+		if(cammino.isEmpty())
+			return 0.0;
+		
+		double peso = 0.0;
+		
+		for(Adiacenza a : cammino) 
+			peso += a.getPeso();
+		
+		return peso;
+	}
+	
+	public boolean aggiuntaAmmissibile(Match m1, Match m2) {
+		
+		if(m1.getTeamHomeID().equals(m2.getTeamHomeID()) && m1.getTeamAwayID().equals(m2.getTeamAwayID())
+				|| m1.getTeamHomeID().equals(m2.getTeamAwayID()) && m1.getTeamAwayID().equals(m2.getTeamHomeID()))
+			return false;
+		
+		return true;
+	}
+	
+	
+	
+	
+	
+	
 }

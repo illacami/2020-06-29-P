@@ -9,6 +9,9 @@ public class TestModel {
 		model.creaGrafo(10, 5);
 		
 		System.out.println(model.connessioneMax());
+		
+//		Match m1 = new Match();
+//		Match m2 = new Match();
 	}
 
 }

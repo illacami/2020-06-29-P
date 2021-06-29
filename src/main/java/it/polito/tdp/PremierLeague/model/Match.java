@@ -106,6 +106,8 @@ public class Match {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((matchID == null) ? 0 : matchID.hashCode());
+		result = prime * result + ((teamAwayID == null) ? 0 : teamAwayID.hashCode());
+		result = prime * result + ((teamHomeID == null) ? 0 : teamHomeID.hashCode());
 		return result;
 	}
 
@@ -123,9 +125,19 @@ public class Match {
 				return false;
 		} else if (!matchID.equals(other.matchID))
 			return false;
+		if (teamAwayID == null) {
+			if (other.teamAwayID != null)
+				return false;
+		} else if (!teamAwayID.equals(other.teamAwayID))
+			return false;
+		if (teamHomeID == null) {
+			if (other.teamHomeID != null)
+				return false;
+		} else if (!teamHomeID.equals(other.teamHomeID))
+			return false;
 		return true;
 	}
-	
+
 	
 	
 }
